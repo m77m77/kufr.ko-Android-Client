@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">ChatAndroidClient</string>
+    <!-- Strings related to login -->
+    <string name="login_placeholder_name">Username</string>
+    <string name="login_placeholder_email">email@exaple.com</string>
+    <string name="login_placeholder_password">Password</string>
+    <string name="login_button_signIn">Sign in</string>
+    <string name="login_button_register">Register</string>
+    <string name="login_text_crt">Create an account.</string>
+    <string name="login_text_already">Already have an account? Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
