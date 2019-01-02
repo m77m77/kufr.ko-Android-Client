@@ -6,4 +6,5 @@
     <color name="buttonBackground">#414755</color>
     <color name="errorMessage">#FF3838</color>
     <color name="greyTxt">#7C7C7C</color>
+    <color name="lightTxt">#FFFFFF</color>
 </resources>

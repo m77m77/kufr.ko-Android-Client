@@ -18,6 +18,7 @@
         android:layout_marginRight="26dp"
         android:background="@drawable/ic_input_background"
         android:drawableStart="@drawable/input_email"
+        android:drawableLeft="@drawable/input_email"
         android:drawablePadding="10dp"
         android:ems="10"
         android:hint="@string/login_placeholder_name"
@@ -27,8 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
-        android:drawableLeft="@drawable/input_email" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
         android:id="@+id/email"
@@ -83,7 +83,6 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="Invalid password"
         android:textColor="@color/errorMessage"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -112,10 +111,11 @@
         android:layout_marginRight="24dp"
         android:background="@drawable/ic_button_background"
         android:includeFontPadding="false"
+        android:onClick="onClickButton"
         android:padding="18dp"
         android:text="@string/login_button_signIn"
         android:textAllCaps="false"
-        android:textColor="@android:color/white"
+        android:textColor="@color/lightTxt"
         android:textSize="30sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
