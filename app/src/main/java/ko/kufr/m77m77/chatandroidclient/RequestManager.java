@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.JsonReader;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -13,35 +14,38 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class RequestManager extends AsyncTask<String, Integer, String> {
+import ko.kufr.m77m77.chatandroidclient.models.Request;
+import ko.kufr.m77m77.chatandroidclient.models.Response;
+import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 
-    private static final String restApiUrl = "http://10.0.2.2:49608";
+public class RequestManager extends AsyncTask<Request, Void, Response> {
 
-    public RequestManager() {
+    private static final String restApiUrl = "http://10.0.2.2:49608/";
 
-    }
+    private static RequestCallback callback;
 
-    private String sendRequest() throws IOException {
-        URL url = new URL(restApiUrl + "/api/auth/register");
+    private JSONObject sendRequest(Request req) throws IOException,JSONException {
+        URL url = new URL(restApiUrl + req.url);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
         conn.setDoInput(true);
 
         conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+        conn.setRequestMethod(req.httpMethod);
 
-        conn.setRequestMethod("POST");
+        if(req.bodyData != null) {
+            OutputStreamWriter requestWriter = new OutputStreamWriter(conn.getOutputStream());
 
-        OutputStreamWriter requestWriter = new OutputStreamWriter(conn.getOutputStream());
-
-        requestWriter.write("Email=a@a.a&Password=123&Name=AndroidTest");
-        requestWriter.flush();
-        requestWriter.close();
+            requestWriter.write(req.bodyData);
+            requestWriter.flush();
+            requestWriter.close();
+        }
 
         InputStreamReader inputReader = new InputStreamReader(conn.getInputStream());
         BufferedReader bufferedReader = new BufferedReader(inputReader);
 
-        String line = "";
+        String line;
 
         StringBuilder sb = new StringBuilder();
 
@@ -53,19 +57,29 @@ public class RequestManager extends AsyncTask<String, Integer, String> {
         inputReader.close();
         bufferedReader.close();
 
-        return sb.toString();
+        return new JSONObject(sb.toString());
     }
 
     @Override
-    protected String doInBackground(String... args){
-        if(args.length < 3)
-            return "";
+    protected Response doInBackground(Request... args){
 
         try {
-            return this.sendRequest();
+            RequestManager.callback = args[0].finishMethod;
+            JSONObject res = this.sendRequest(args[0]);
+
+            return new Response(StatusCode.values()[res.getInt("StatusCode")],res.get("Data"));
+
         } catch (IOException e) {
             e.printStackTrace();
-            return e.getMessage();
+            return new Response();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return new Response();
         }
+    }
+
+    @Override
+    protected void onPostExecute(Response result) {
+        RequestManager.callback.call(result);
     }
 }

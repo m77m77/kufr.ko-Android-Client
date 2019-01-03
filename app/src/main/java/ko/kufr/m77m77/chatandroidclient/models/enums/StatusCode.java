@@ -13,5 +13,7 @@ public enum StatusCode {
     EMPTY_PASSWORD,
     EMPTY_NAME,
     EMAIL_ALREADY_EXISTS,
-    FORBIDDEN
+    FORBIDDEN,
+
+    NETWORK_ERROR
 }
