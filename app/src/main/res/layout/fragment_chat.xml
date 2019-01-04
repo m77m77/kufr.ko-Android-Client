@@ -20,7 +20,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:orientation="vertical" >
+
+        </LinearLayout>
     </ScrollView>
 
     <android.support.constraint.ConstraintLayout
@@ -34,30 +36,35 @@
 
         <ImageView
             android:id="@+id/uploadButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/upload"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:paddingLeft="12dp"
+            android:paddingTop="8dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_upload" />
 
         <EditText
             android:id="@+id/message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
             android:background="@drawable/ic_input_background"
             android:ems="10"
             android:hint="@string/chat_placeholder_message"
             android:inputType="textLongMessage"
-            android:padding="5dp"
+            android:paddingLeft="12dp"
+            android:paddingTop="5dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="5dp"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/sendButton"
@@ -66,16 +73,18 @@
 
         <ImageView
             android:id="@+id/sendButton"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/send"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_send" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.constraint.ConstraintLayout>

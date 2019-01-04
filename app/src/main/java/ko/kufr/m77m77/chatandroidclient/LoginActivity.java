@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,14 +17,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.support.v4.app.Fragment;
 
 import java.util.concurrent.Callable;
 
+import ko.kufr.m77m77.chatandroidclient.fragments.ChatFragment;
 import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
 import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ChatFragment.OnFragmentInteractionListener {
 
     private EditText nameField;
     private EditText emailField;
@@ -52,6 +57,13 @@ public class LoginActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 121);
         }
 
+
+        FragmentManager man = this.getSupportFragmentManager();
+        FragmentTransaction transaction = man.beginTransaction();
+
+        ChatFragment frag = new ChatFragment();
+        transaction.add(R.id.fragmentContainer,frag);
+        transaction.commit();
     }
 
     public  void onClickCreateNewAccount(View view) {
@@ -108,5 +120,10 @@ public class LoginActivity extends AppCompatActivity {
     private void openMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }

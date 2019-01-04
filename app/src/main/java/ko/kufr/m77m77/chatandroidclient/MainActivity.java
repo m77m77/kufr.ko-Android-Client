@@ -19,6 +19,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        ((TextView)this.findViewById(R.id.textView2)).setText(getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"));
+        //((TextView)this.findViewById(R.id.textView2)).setText(getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"));
     }
 }
