@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.GroupsFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <View
+        android:id="@+id/groups_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:background="@color/buttonBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groups_search" />
+
+    <SearchView
+        android:id="@+id/groups_search"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="8dp"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@android:color/transparent"
+        android:queryHint="@string/search_hint"
+        android:searchIcon="@drawable/ic_search"
+        android:showDividers="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:queryBackground="@android:color/transparent"
+        app:searchIcon="@drawable/ic_search">
+
+    </SearchView>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbarStyle="insideOverlay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groups_divider"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:id="@+id/groups"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>

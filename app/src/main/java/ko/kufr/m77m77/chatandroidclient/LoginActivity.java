@@ -22,11 +22,13 @@ import android.support.v4.app.Fragment;
 import java.util.concurrent.Callable;
 
 import ko.kufr.m77m77.chatandroidclient.fragments.ChatFragment;
+import ko.kufr.m77m77.chatandroidclient.fragments.GroupFragment;
+import ko.kufr.m77m77.chatandroidclient.fragments.GroupsFragment;
 import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
 import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 
-public class LoginActivity extends AppCompatActivity implements ChatFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity implements GroupsFragment.OnFragmentInteractionListener,GroupFragment.OnFragmentInteractionListener {
 
     private EditText nameField;
     private EditText emailField;
@@ -58,12 +60,12 @@ public class LoginActivity extends AppCompatActivity implements ChatFragment.OnF
         }
 
 
-        FragmentManager man = this.getSupportFragmentManager();
+        /*FragmentManager man = this.getSupportFragmentManager();
         FragmentTransaction transaction = man.beginTransaction();
 
-        ChatFragment frag = new ChatFragment();
+        GroupsFragment frag = GroupsFragment.newInstance("a","a");
         transaction.add(R.id.fragmentContainer,frag);
-        transaction.commit();
+        transaction.commit();*/
     }
 
     public  void onClickCreateNewAccount(View view) {
@@ -100,6 +102,10 @@ public class LoginActivity extends AppCompatActivity implements ChatFragment.OnF
         }
     }
 
+    public void onClickDebug(View view) {
+        this.openMainActivity();
+    }
+
     private void sendRequest(final String authMethod,final String name,final String email, final String password) {
         new RequestManager().execute(new Request("api/auth/" + authMethod, "POST", "Email="+email+"&Password="+password+"&Name=" + name, new RequestCallback() {
             public void call(Response response) {
@@ -124,6 +130,11 @@ public class LoginActivity extends AppCompatActivity implements ChatFragment.OnF
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(View view) {
 
     }
 }

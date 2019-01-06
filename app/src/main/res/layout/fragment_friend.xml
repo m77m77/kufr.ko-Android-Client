@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/friend_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    tools:context=".fragments.GroupFragment">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friend_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/profile_img_debug"
+        app:layout_constraintBottom_toTopOf="@+id/friend_divider"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/friend_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Jméno Příjmení"
+        android:textColor="@color/buttonBackground"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/friend_image"
+        app:layout_constraintEnd_toStartOf="@+id/friend_accept"
+        app:layout_constraintStart_toEndOf="@+id/friend_image"
+        app:layout_constraintTop_toTopOf="@+id/friend_image" />
+
+    <View
+        android:id="@+id/friend_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/buttonBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/friend_accept"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="7.5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/friend_image"
+        app:layout_constraintEnd_toStartOf="@+id/friend_deny"
+        app:layout_constraintTop_toTopOf="@+id/friend_image"
+        app:srcCompat="@drawable/ic_accept" />
+
+    <ImageView
+        android:id="@+id/friend_more"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="7.5dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/friend_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/friend_image"
+        app:srcCompat="@drawable/ic_usersettings" />
+
+    <ImageView
+        android:id="@+id/friend_block"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="7.5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/friend_image"
+        app:layout_constraintEnd_toStartOf="@+id/friend_more"
+        app:layout_constraintTop_toTopOf="@+id/friend_image"
+        app:srcCompat="@drawable/ic_block" />
+
+    <ImageView
+        android:id="@+id/friend_deny"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="7.5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/friend_image"
+        app:layout_constraintEnd_toStartOf="@+id/friend_block"
+        app:layout_constraintTop_toTopOf="@+id/friend_image"
+        app:srcCompat="@drawable/ic_deny" />
+
+</android.support.constraint.ConstraintLayout>

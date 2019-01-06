@@ -7,4 +7,5 @@
     <color name="errorMessage">#FF3838</color>
     <color name="greyTxt">#7C7C7C</color>
     <color name="lightTxt">#FFFFFF</color>
+    <color name="selected">#1C9CD3</color>
 </resources>
