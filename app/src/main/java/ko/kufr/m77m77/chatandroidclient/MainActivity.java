@@ -1,10 +1,14 @@
 package ko.kufr.m77m77.chatandroidclient;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
 
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 121);
+        }
 
         FragmentManager man = this.getSupportFragmentManager();
         FragmentTransaction transaction = man.beginTransaction();
@@ -33,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
         IndexFragment frag = new IndexFragment();
         transaction.add(R.id.mainFragmentContainer,frag);
         transaction.commit();
+
+
 
         //((TextView)this.findViewById(R.id.textView2)).setText(getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"));
     }

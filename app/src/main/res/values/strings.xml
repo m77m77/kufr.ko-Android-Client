@@ -12,8 +12,15 @@
     <string name="chat_placeholder_message">Type a message</string>
     <string name="friends_requests_title">Friend requests</string>)
     <string name="friends_normal_title">Friends</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_invalid_request">Server error. Please try again later</string>
+    <string name="error_database_error">Server error. Please try again later</string>
+    <string name="error_invalid_email">Invalid email address</string>
+    <string name="error_invalid_password">Invalid password</string>
+    <string name="error_empty_email">Please enter a email address</string>
+    <string name="error_empty_password">Please enter a password</string>
+    <string name="error_empty_name">Please enter a username</string>
+    <string name="error_email_already_exists">This email address is already taken</string>
+    <string name="error_network">Error connecting to server. Please try again later</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email

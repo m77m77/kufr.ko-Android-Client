@@ -3,6 +3,7 @@ package ko.kufr.m77m77.chatandroidclient;
 import android.os.AsyncTask;
 import android.os.Debug;
 import android.util.JsonReader;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,6 +33,8 @@ public class RequestManager extends AsyncTask<Request, Void, Response> {
         conn.setDoInput(true);
 
         conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+        if(req.token != "" && req.token != null)
+            conn.setRequestProperty("Token",req.token);
         conn.setRequestMethod(req.httpMethod);
 
         if(req.bodyData != null) {

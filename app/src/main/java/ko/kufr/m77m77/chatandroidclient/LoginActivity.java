@@ -35,7 +35,10 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
     private EditText passwordField;
     private Button button;
     private TextView crtAcc;
-    private TextView error;
+
+    private TextView errorName;
+    private TextView errorEmail;
+    private TextView errorPassword;
 
     private boolean inRegister;
 
@@ -50,7 +53,10 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
         this.passwordField = this.findViewById(R.id.password);
         this.button = this.findViewById(R.id.loginButton);
         this.crtAcc = this.findViewById(R.id.crt_account);
-        this.error = this.findViewById(R.id.error_message);
+
+        this.errorName = this.findViewById(R.id.error_message_name);
+        this.errorEmail = this.findViewById(R.id.error_message_email);
+        this.errorPassword = this.findViewById(R.id.error_message);
 
         this.inRegister = false;
         this.nameField.setVisibility(View.GONE);
@@ -107,9 +113,13 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
     }
 
     private void sendRequest(final String authMethod,final String name,final String email, final String password) {
-        new RequestManager().execute(new Request("api/auth/" + authMethod, "POST", "Email="+email+"&Password="+password+"&Name=" + name, new RequestCallback() {
+        new RequestManager().execute(new Request("api/auth/" + authMethod, "POST","", "Email="+email+"&Password="+password+"&Name=" + name, new RequestCallback() {
             public void call(Response response) {
                 //error.setText(response.statusCode + response.data.toString());
+                errorName.setVisibility(View.GONE);
+                errorEmail.setVisibility(View.GONE);
+                errorPassword.setVisibility(View.GONE);
+
                 if(response.statusCode == StatusCode.OK) {
                     if(authMethod == "login") {
                         SharedPreferences sp = getSharedPreferences("global", Context.MODE_PRIVATE);
@@ -117,6 +127,46 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
                         openMainActivity();
                     }else if(authMethod == "register") {
                         sendRequest("login",name,email,password);
+                    }
+                }else {
+
+                    switch (response.statusCode) {
+                        case INVALID_REQUEST:
+                            errorPassword.setVisibility(View.VISIBLE);
+                            errorPassword.setText(getString(R.string.error_invalid_request));
+                            break;
+                        case DATABASE_ERROR:
+                            errorPassword.setVisibility(View.VISIBLE);
+                            errorPassword.setText(R.string.error_database_error);
+                            break;
+                        case INVALID_EMAIL:
+                            errorEmail.setVisibility(View.VISIBLE);
+                            errorEmail.setText(R.string.error_invalid_email);
+                            break;
+                        case INVALID_PASSWORD:
+                            errorPassword.setVisibility(View.VISIBLE);
+                            errorPassword.setText(R.string.error_invalid_password);
+                            break;
+                        case EMAIL_ALREADY_EXISTS:
+                            errorEmail.setVisibility(View.VISIBLE);
+                            errorEmail.setText(R.string.error_email_already_exists);
+                            break;
+                        case EMPTY_EMAIL:
+                            errorEmail.setVisibility(View.VISIBLE);
+                            errorEmail.setText(R.string.error_empty_email);
+                            break;
+                        case EMPTY_PASSWORD:
+                            errorPassword.setVisibility(View.VISIBLE);
+                            errorPassword.setText(R.string.error_empty_password);
+                            break;
+                        case EMPTY_NAME:
+                            errorName.setVisibility(View.VISIBLE);
+                            errorName.setText(R.string.error_empty_name);
+                            break;
+                        case NETWORK_ERROR:
+                            errorPassword.setVisibility(View.VISIBLE);
+                            errorPassword.setText(R.string.error_network);
+                            break;
                     }
                 }
             }

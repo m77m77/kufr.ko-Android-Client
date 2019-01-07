@@ -82,6 +82,7 @@ public class FriendFragment extends Fragment {
 
             if(this.type == Type.REQUEST) {
                 view.findViewById(R.id.friend_more).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_container).setClickable(false);
             }else if(this.type == Type.NORMAL) {
                 view.findViewById(R.id.friend_accept).setVisibility(View.GONE);
                 view.findViewById(R.id.friend_deny).setVisibility(View.GONE);
