@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.util.Calendar;
 
 import ko.kufr.m77m77.chatandroidclient.R;
 import ko.kufr.m77m77.chatandroidclient.models.group.GroupInfo;
+import ko.kufr.m77m77.chatandroidclient.models.user.UserPublic;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -78,8 +80,14 @@ public class FriendsFragment extends Fragment {
     private void debugCrtFriend() {
         Log.d("Debug","friends loaded.");
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.friends,SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title)));
         for(int i = 0; i < 10; i++){
-            FriendFragment newFragment = new FriendFragment();
+            if(i == 2)
+                ft.add(R.id.friends,SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title)));
+
+            UserPublic up = new UserPublic();
+            up.name = "Jméno Příjmení #" + i;
+            FriendFragment newFragment = FriendFragment.newInstance(up,i < 2 ? FriendFragment.Type.REQUEST : FriendFragment.Type.NORMAL);
 
             ft.add(R.id.friends, newFragment);
 

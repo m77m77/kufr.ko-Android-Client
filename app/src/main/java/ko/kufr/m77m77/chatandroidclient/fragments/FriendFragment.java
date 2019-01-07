@@ -3,12 +3,15 @@ package ko.kufr.m77m77.chatandroidclient.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import ko.kufr.m77m77.chatandroidclient.R;
+import ko.kufr.m77m77.chatandroidclient.models.user.UserPublic;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,14 +22,18 @@ import ko.kufr.m77m77.chatandroidclient.R;
  * create an instance of this fragment.
  */
 public class FriendFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    public enum Type {
+        REQUEST,
+        NORMAL,
+        BLOCK
+    }
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_USER = "paramUser";
+    private static final String ARG_TYPE = "paramType";
+
+
+    private UserPublic userInfo;
+    private Type type;
 
     private OnFragmentInteractionListener mListener;
 
@@ -38,16 +45,16 @@ public class FriendFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param user Parameter 1.
+     * @param type Parameter 2.
      * @return A new instance of fragment FriendFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendFragment newInstance(String param1, String param2) {
+    public static FriendFragment newInstance(UserPublic user, Type type) {
         FriendFragment fragment = new FriendFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_USER,user);
+        args.putSerializable(ARG_TYPE,type);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +63,8 @@ public class FriendFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            this.userInfo = (UserPublic) getArguments().getSerializable(ARG_USER);
+            this.type = (Type) getArguments().getSerializable(ARG_TYPE);
         }
     }
 
@@ -66,6 +73,21 @@ public class FriendFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_friend, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        if(this.userInfo != null && this.type != null) {
+            ((TextView)view.findViewById(R.id.friend_name)).setText(this.userInfo.name);
+
+            if(this.type == Type.REQUEST) {
+                view.findViewById(R.id.friend_more).setVisibility(View.GONE);
+            }else if(this.type == Type.NORMAL) {
+                view.findViewById(R.id.friend_accept).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_deny).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_block).setVisibility(View.GONE);
+            }
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event

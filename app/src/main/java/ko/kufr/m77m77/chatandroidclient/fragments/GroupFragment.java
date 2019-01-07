@@ -30,7 +30,7 @@ import ko.kufr.m77m77.chatandroidclient.models.group.GroupInfo;
 public class GroupFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_MESSAGE = "paramMessage";
+    private static final String ARG_GROUP = "paramGroup";
 
     // TODO: Rename and change types of parameters
     private GroupInfo info;
@@ -52,7 +52,7 @@ public class GroupFragment extends Fragment {
     public static GroupFragment newInstance(GroupInfo info) {
         GroupFragment fragment = new GroupFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ARG_MESSAGE,info);
+        args.putSerializable(ARG_GROUP,info);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,7 +61,7 @@ public class GroupFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            info = (GroupInfo) getArguments().getSerializable(ARG_MESSAGE);
+            info = (GroupInfo) getArguments().getSerializable(ARG_GROUP);
         }
     }
 

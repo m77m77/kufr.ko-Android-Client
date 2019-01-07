@@ -10,6 +10,8 @@
     <string name="login_text_already">Already have an account? Sign in</string>
     <string name="search_hint">Search</string>
     <string name="chat_placeholder_message">Type a message</string>
+    <string name="friends_requests_title">Friend requests</string>)
+    <string name="friends_normal_title">Friends</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
