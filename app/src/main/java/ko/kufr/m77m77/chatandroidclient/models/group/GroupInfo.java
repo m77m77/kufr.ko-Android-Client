@@ -29,20 +29,20 @@ public class GroupInfo implements Serializable {
         this.name = json.getString("Name");
         this.id_attachment = json.getLong("Id_Attachment");
         String ignoreExpireStr = json.getString("IgnoreExpire");
-        if(ignoreExpireStr == null)
+        if(ignoreExpireStr == null || ignoreExpireStr == "null")
             this.ignoreExpire = null;
         else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             this.ignoreExpire = sdf.parse(ignoreExpireStr);
         }
 
         this.lastMessageSender = json.getString("LastMessageSender");
         this.lastMessageText = json.getString("LastMessageText");
         String lastMessageDateStr = json.getString("LastMessageDate");
-        if(lastMessageDateStr == null)
+        if(lastMessageDateStr == null || lastMessageDateStr == "null")
             this.lastMessageDate = null;
         else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             this.lastMessageDate = sdf.parse(lastMessageDateStr);
         }
 

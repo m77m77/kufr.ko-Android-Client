@@ -29,7 +29,7 @@ public class RequestManager extends AsyncTask<Request, Void, Response> {
         URL url = new URL(restApiUrl + req.url);
 
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
+        conn.setDoOutput(req.bodyData != null);
         conn.setDoInput(true);
 
         conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
@@ -74,10 +74,10 @@ public class RequestManager extends AsyncTask<Request, Void, Response> {
 
         } catch (IOException e) {
             e.printStackTrace();
-            return new Response();
+            return new Response(StatusCode.NETWORK_ERROR,null);
         } catch (JSONException e) {
             e.printStackTrace();
-            return new Response();
+            return new Response(StatusCode.NETWORK_ERROR,null);
         }
     }
 

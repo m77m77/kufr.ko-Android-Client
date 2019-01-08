@@ -80,8 +80,8 @@ public class GroupsFragment extends Fragment{
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        this.debugCrtGroup();
-        //this.loadGroups();
+        //this.debugCrtGroup();
+        this.loadGroups();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class GroupsFragment extends Fragment{
     }
 
     private void loadGroups() {
-        new RequestManager().execute(new Request("api/group/find?name=", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), "", new RequestCallback() {
+        new RequestManager().execute(new Request("api/group/find?name=", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), null, new RequestCallback() {
             public void call(Response response) {
                 if(response.statusCode == StatusCode.OK) {
                     try {
@@ -133,11 +133,13 @@ public class GroupsFragment extends Fragment{
                         ft.commit();
                     }
                     catch (Exception e) {
+                        e.printStackTrace();
                         Log.d("Res:",response.toString());
                         Log.d("Ex",e.toString());
+                        //debugCrtGroup();
                     }
                 }else {
-
+                    //debugCrtGroup();
                     /*switch (response.statusCode) {
                         case INVALID_REQUEST:
                             errorPassword.setVisibility(View.VISIBLE);
