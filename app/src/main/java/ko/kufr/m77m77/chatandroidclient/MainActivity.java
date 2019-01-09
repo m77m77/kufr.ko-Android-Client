@@ -16,13 +16,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import ko.kufr.m77m77.chatandroidclient.fragments.ChatFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.FriendFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.FriendsFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.GroupFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.GroupsFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.IndexFragment;
+import ko.kufr.m77m77.chatandroidclient.fragments.MessageFragment;
 
-public class MainActivity extends AppCompatActivity implements GroupFragment.OnFragmentInteractionListener,GroupsFragment.OnFragmentInteractionListener,IndexFragment.OnFragmentInteractionListener,FriendsFragment.OnFragmentInteractionListener,FriendFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements GroupFragment.OnFragmentInteractionListener,GroupsFragment.OnFragmentInteractionListener,IndexFragment.OnFragmentInteractionListener,FriendsFragment.OnFragmentInteractionListener,FriendFragment.OnFragmentInteractionListener,ChatFragment.OnFragmentInteractionListener,MessageFragment.OnFragmentInteractionListener {
+
+    private IndexFragment indexFragment;
+
+    private ChatFragment chatFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +40,18 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 121);
         }
 
-        FragmentManager man = this.getSupportFragmentManager();
-        FragmentTransaction transaction = man.beginTransaction();
+        this.indexFragment = new IndexFragment();
 
-        IndexFragment frag = new IndexFragment();
-        transaction.add(R.id.mainFragmentContainer,frag);
+        FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.mainFragmentContainer,this.indexFragment);
+        //ChatFragment chatFrag = new ChatFragment();
+        //transaction.add(R.id.mainFragmentContainer,chatFrag);
         transaction.commit();
-
-
 
         //((TextView)this.findViewById(R.id.textView2)).setText(getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"));
     }
+
+
 
     @Override
     public void onFragmentInteraction(Uri uri) {
@@ -52,7 +59,28 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
     }
 
     @Override
+    public void backFromChat() {
+        FragmentTransaction trn = this.getSupportFragmentManager().beginTransaction();
+        trn.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        trn.show(this.indexFragment);
+        trn.remove(this.chatFragment);
+        trn.commit();
+    }
+
+    @Override
     public void onFragmentInteraction(View view) {
         Log.d("A","X");
+    }
+
+    @Override
+    public void openChatGroup(long id) {
+        this.chatFragment = new ChatFragment();
+
+        FragmentTransaction trn = this.getSupportFragmentManager().beginTransaction();
+        trn.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+        trn.hide(this.indexFragment);
+        trn.add(R.id.mainFragmentContainer,this.chatFragment);
+        trn.addToBackStack(null);
+        trn.commit();
     }
 }

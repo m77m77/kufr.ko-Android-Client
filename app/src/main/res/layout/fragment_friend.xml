@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/friend_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="?android:attr/selectableItemBackground"
     android:clickable="true"
     tools:context=".fragments.GroupFragment">
@@ -33,7 +33,7 @@
         android:layout_marginRight="8dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="Jméno Příjmení"
+        android:text="@string/placeholder_name"
         android:textColor="@color/buttonBackground"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/friend_image"

@@ -28,8 +28,9 @@ public class GroupInfo implements Serializable {
         this.id = json.getLong("Id");
         this.name = json.getString("Name");
         this.id_attachment = json.getLong("Id_Attachment");
-        String ignoreExpireStr = json.getString("IgnoreExpire");
-        if(ignoreExpireStr == null || ignoreExpireStr == "null")
+
+        String ignoreExpireStr = json.optString("IgnoreExpire");
+        if (ignoreExpireStr == null || ignoreExpireStr == "null")
             this.ignoreExpire = null;
         else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -38,13 +39,13 @@ public class GroupInfo implements Serializable {
 
         this.lastMessageSender = json.getString("LastMessageSender");
         this.lastMessageText = json.getString("LastMessageText");
-        String lastMessageDateStr = json.getString("LastMessageDate");
-        if(lastMessageDateStr == null || lastMessageDateStr == "null")
+
+        String lastMessageDateStr = json.optString("LastMessageDate");
+        if (lastMessageDateStr == null || lastMessageDateStr == "null")
             this.lastMessageDate = null;
         else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            this.lastMessageDate = sdf.parse(lastMessageDateStr);
-        }
+            this.lastMessageDate = sdf.parse(lastMessageDateStr); }
 
         this.newMessages = json.getInt("NewMessages");
     }

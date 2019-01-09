@@ -8,15 +8,25 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+    <include
+        android:id="@+id/chat_include"
+        layout="@layout/appbar_chat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/chat_bottomBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/chat_include">
 
         <LinearLayout
+            android:id="@+id/chat_messages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -25,7 +35,7 @@
     </ScrollView>
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/chat_bottomBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
@@ -34,9 +44,9 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
-            android:id="@+id/uploadButton"
+            android:id="@+id/chat_uploadButton"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:paddingLeft="12dp"
@@ -49,7 +59,7 @@
             app:srcCompat="@drawable/ic_upload" />
 
         <EditText
-            android:id="@+id/message"
+            android:id="@+id/chat_message_field"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -66,14 +76,14 @@
             android:paddingBottom="5dp"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/sendButton"
-            app:layout_constraintStart_toEndOf="@+id/uploadButton"
+            app:layout_constraintEnd_toStartOf="@+id/chat_sendButton"
+            app:layout_constraintStart_toEndOf="@+id/chat_uploadButton"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/sendButton"
+            android:id="@+id/chat_sendButton"
             android:layout_width="wrap_content"
-            android:layout_height="44dp"
+            android:layout_height="48dp"
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:paddingLeft="8dp"
@@ -86,4 +96,5 @@
             app:srcCompat="@drawable/ic_send" />
 
     </android.support.constraint.ConstraintLayout>
+
 </android.support.constraint.ConstraintLayout>

@@ -119,6 +119,15 @@ public class GroupFragment extends Fragment {
                     onButtonPressed(v);
                 }
             });
+
+            view.findViewById(R.id.group_container).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mListener != null) {
+                        mListener.openChatGroup(info.id);
+                    }
+                }
+            });
         }
     }
 
@@ -159,5 +168,6 @@ public class GroupFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(View view);
+        void openChatGroup(long id);
     }
 }

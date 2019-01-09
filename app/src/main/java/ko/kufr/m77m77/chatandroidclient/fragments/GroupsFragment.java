@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -92,6 +93,11 @@ public class GroupsFragment extends Fragment{
         return inflater.inflate(R.layout.fragment_groups, container, false);
     }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        //this.loadGroups();
+    }
+
     private void debugCrtGroup() {
         Log.d("Debug","groups loaded.");
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -114,11 +120,14 @@ public class GroupsFragment extends Fragment{
     }
 
     private void loadGroups() {
+        Log.d("AAA","AAA");
         new RequestManager().execute(new Request("api/group/find?name=", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), null, new RequestCallback() {
             public void call(Response response) {
                 if(response.statusCode == StatusCode.OK) {
                     try {
                         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+
+                        int newMessages = 0;
 
                         JSONArray array = new JSONArray(response.data.toString());
                         for(int i = 0; i < array.length(); i++) {

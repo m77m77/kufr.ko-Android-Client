@@ -3,40 +3,35 @@ package ko.kufr.m77m77.chatandroidclient.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.Calendar;
-
 import ko.kufr.m77m77.chatandroidclient.R;
-import ko.kufr.m77m77.chatandroidclient.models.group.GroupInfo;
+import ko.kufr.m77m77.chatandroidclient.models.message.Message;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ChatFragment.OnFragmentInteractionListener} interface
+ * {@link MessageFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ChatFragment#newInstance} factory method to
+ * Use the {@link MessageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChatFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class MessageFragment extends Fragment {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_MESSAGE = "paramMessage";
+    private static final String ARG_FIRST = "paramFirst";
+    private static final String ARG_LAST = "paramLast";
+
+    private Message message;
+    private boolean first;
+    private boolean last;
 
     private OnFragmentInteractionListener mListener;
 
-    public ChatFragment() {
+    public MessageFragment() {
         // Required empty public constructor
     }
 
@@ -44,16 +39,18 @@ public class ChatFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChatFragment.
+     * @param message Parameter 1.
+     * @param first Parameter 2.
+     * @param last Parameter 3.
+     * @return A new instance of fragment MessageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ChatFragment newInstance(String param1, String param2) {
-        ChatFragment fragment = new ChatFragment();
+    public static MessageFragment newInstance(Message message, boolean first, boolean last) {
+        MessageFragment fragment = new MessageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putSerializable(ARG_MESSAGE, message);
+        args.putBoolean(ARG_FIRST, first);
+        args.putBoolean(ARG_LAST, last);
         fragment.setArguments(args);
         return fragment;
     }
@@ -62,44 +59,17 @@ public class ChatFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            this.message = (Message) getArguments().getSerializable(ARG_MESSAGE);
+            this.first = getArguments().getBoolean(ARG_FIRST);
+            this.last = getArguments().getBoolean(ARG_LAST);
         }
-
-        this.debugCrtMessage();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_chat, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        view.findViewById(R.id.chat_include).findViewById(R.id.appbar_back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(mListener != null) {
-                    mListener.backFromChat();
-                }
-            }
-        });
-    }
-
-    private void debugCrtMessage() {
-        Log.d("Debug","messages loaded.");
-        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        for(int i = 0; i < 10; i++){
-
-
-            MessageFragment messageFrag = new MessageFragment();
-
-            ft.add(R.id.chat_messages, messageFrag);
-
-        }
-        ft.commit();
+        return inflater.inflate(R.layout.fragment_message_normal, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -139,6 +109,5 @@ public class ChatFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-        void backFromChat();
     }
 }

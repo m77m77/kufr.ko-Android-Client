@@ -28,7 +28,7 @@ import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
 import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 
-public class LoginActivity extends AppCompatActivity implements GroupsFragment.OnFragmentInteractionListener,GroupFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText nameField;
     private EditText emailField;
@@ -64,14 +64,6 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.INTERNET}, 121);
         }
-
-
-        /*FragmentManager man = this.getSupportFragmentManager();
-        FragmentTransaction transaction = man.beginTransaction();
-
-        GroupsFragment frag = GroupsFragment.newInstance("a","a");
-        transaction.add(R.id.fragmentContainer,frag);
-        transaction.commit();*/
     }
 
     public  void onClickCreateNewAccount(View view) {
@@ -176,15 +168,5 @@ public class LoginActivity extends AppCompatActivity implements GroupsFragment.O
     private void openMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         this.startActivity(intent);
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onFragmentInteraction(View view) {
-
     }
 }
