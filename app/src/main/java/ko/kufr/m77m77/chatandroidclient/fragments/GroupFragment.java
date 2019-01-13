@@ -57,6 +57,13 @@ public class GroupFragment extends Fragment {
         return fragment;
     }
 
+    public String getName() {
+        if(this.info != null)
+            return  this.info.name;
+
+        return null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +101,7 @@ public class GroupFragment extends Fragment {
                     format = new SimpleDateFormat("dd.MM.yyyy");
 
                 }else if(now.get(Calendar.DAY_OF_YEAR) != lmDate.get(Calendar.DAY_OF_YEAR)) {
-                    format = new SimpleDateFormat("dd.MM");
+                    format = new SimpleDateFormat("dd.MM.");
                 }else {
                     format = new SimpleDateFormat("HH:mm");
                 }
@@ -116,25 +123,11 @@ public class GroupFragment extends Fragment {
             view.findViewById(R.id.group_container).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onButtonPressed(v);
-                }
-            });
-
-            view.findViewById(R.id.group_container).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     if(mListener != null) {
                         mListener.openChatGroup(info.id);
                     }
                 }
             });
-        }
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(View view) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(view);
         }
     }
 

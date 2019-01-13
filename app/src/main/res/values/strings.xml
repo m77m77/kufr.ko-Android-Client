@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Kufr.ko</string>
     <string name="placeholder_name">Jméno Příjmení</string>
-    <string name="placeholder_long">########## ########### ########</string>
+    <string name="placeholder_long">########## ########### ######## ####### ######## #######</string>
     <string name="login_placeholder_name">Username</string>
     <string name="login_placeholder_email">email@exaple.com</string>
     <string name="login_placeholder_password">Password</string>

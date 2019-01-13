@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +17,13 @@ import android.view.ViewGroup;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 
 import ko.kufr.m77m77.chatandroidclient.R;
 import ko.kufr.m77m77.chatandroidclient.RequestCallback;
+import ko.kufr.m77m77.chatandroidclient.RequestDataCallback;
 import ko.kufr.m77m77.chatandroidclient.RequestManager;
 import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
@@ -43,6 +48,19 @@ public class FriendsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private FriendFragment[] pending;
+    private FriendFragment[] existing;
+
+    private FriendFragment[] newPending;
+    private FriendFragment[] newExisting;
+
+    private boolean pendingDone;
+    private boolean existingDone;
+
+
+    private SectionDividerFragment pendingDivider;
+    private SectionDividerFragment existingDivider;
 
     private OnFragmentInteractionListener mListener;
 
@@ -76,9 +94,9 @@ public class FriendsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        this.debugCrtFriend();
-        //this.loadPendingFriends();
-        //this.loadExistingFriends();
+
+        this.pendingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title));
+        this.existingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title));
     }
 
     @Override
@@ -90,17 +108,28 @@ public class FriendsFragment extends Fragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        //this.loadPendingFriends();
         //this.loadExistingFriends();
 
+        SwipeRefreshLayout refreshView = (SwipeRefreshLayout) view.findViewById(R.id.friends_swipe_container);
+        refreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
+        refreshView.setRefreshing(true);
+        this.refresh();
     }
 
     private void debugCrtFriend() {
         Log.d("Debug","friends loaded.");
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.friends,SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title)));
+        ft.add(R.id.friends,this.pendingDivider);
         for(int i = 0; i < 10; i++){
             if(i == 2)
-                ft.add(R.id.friends,SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title)));
+                ft.add(R.id.friends,this.existingDivider);
 
             UserPublic up = new UserPublic();
             up.name = "Jméno Příjmení #" + i;
@@ -112,142 +141,125 @@ public class FriendsFragment extends Fragment {
         ft.commit();
     }
 
+    public void refresh() {
+
+        this.pendingDone = false;
+        this.existingDone = false;
+
+        this.loadPendingFriends();
+        this.loadExistingFriends();
+    }
+
+    private void refreshDone() {
+        if(!(this.pendingDone && this.existingDone))
+            return;
+
+        FragmentTransaction ftRem = getActivity().getSupportFragmentManager().beginTransaction();
+
+        ftRem.remove(this.pendingDivider);
+        ftRem.remove(this.existingDivider);
+
+        if(this.pending != null)
+        for (FriendFragment frag: this.pending) {
+            ftRem.remove(frag);
+        }
+
+        if(this.existing != null)
+        for (FriendFragment frag: this.existing) {
+            ftRem.remove(frag);
+        }
+
+        ftRem.commit();
+
+
+        this.pending = this.newPending;
+        this.existing = this.newExisting;
+
+        this.pendingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title));
+        this.existingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title));
+
+
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+
+        if(this.pending.length > 0)
+        ft.add(R.id.friends,this.pendingDivider);
+
+        for (FriendFragment frag: this.pending) {
+            ft.add(R.id.friends,frag);
+        }
+
+
+        ft.add(R.id.friends,this.existingDivider);
+
+        for (FriendFragment frag: this.existing) {
+            ft.add(R.id.friends,frag);
+        }
+
+        ft.commit();
+
+        ((SwipeRefreshLayout) this.getView().findViewById(R.id.friends_swipe_container)).setRefreshing(false);
+
+        if(mListener != null) {
+            mListener.setNewRequests(this.pending.length);
+        }
+    }
+
     private void loadExistingFriends() {
-        new RequestManager().execute(new Request("api/friend/loadexistingfriends", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), null, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
-                    try {
-                        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                        ft.add(R.id.friends,SectionDividerFragment.newInstance(getContext().getString(R.string.friends_normal_title)));
+        this.mListener.sendRequest("api/friend/loadexistingfriends","GET",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
 
-                        JSONArray array = new JSONArray(response.data.toString());
-                        for(int i = 0; i < array.length(); i++) {
-                            JSONObject obj = array.getJSONObject(i);
-                            UserPublic user = new UserPublic(obj);
+                    newExisting = new FriendFragment[array.length()];
 
-                            FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.NORMAL);
+                    for(int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        UserPublic user = new UserPublic(obj);
 
-                            ft.add(R.id.friends, newFragment);
-                        }
+                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.NORMAL);
 
-                        ft.commit();
+                        newExisting[i] = newFragment;
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        //debugCrtGroup();
-                    }
-                }else {
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
+
+                    existingDone = true;
+
+                    refreshDone();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }));
+        });
     }
 
     private void loadPendingFriends() {
-        new RequestManager().execute(new Request("api/friend/loadpending", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), null, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
-                    try {
-                        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                        ft.add(R.id.friends,SectionDividerFragment.newInstance(getContext().getString(R.string.friends_requests_title)));
+        this.mListener.sendRequest("api/friend/loadpending","GET",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
 
-                        JSONArray array = new JSONArray(response.data.toString());
-                        for(int i = 0; i < array.length(); i++) {
-                            JSONObject obj = array.getJSONObject(i);
-                            UserPublic user = new UserPublic(obj);
+                    newPending = new FriendFragment[array.length()];
 
-                            FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.REQUEST);
+                    for(int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        UserPublic user = new UserPublic(obj);
 
-                            ft.add(R.id.friends, newFragment);
-                        }
+                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.REQUEST);
 
-                        ft.commit();
+                        newPending[i] = newFragment;
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        //debugCrtGroup();
-                    }
-                }else {
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
+
+                    pendingDone = true;
+
+                    refreshDone();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }));
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -287,5 +299,7 @@ public class FriendsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void setNewRequests(int num);
+        void sendRequest(String url, String method, String data, final RequestDataCallback callback);
     }
 }

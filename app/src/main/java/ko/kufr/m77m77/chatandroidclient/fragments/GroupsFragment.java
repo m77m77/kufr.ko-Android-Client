@@ -1,34 +1,24 @@
 package ko.kufr.m77m77.chatandroidclient.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.SearchView;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.Console;
-import java.security.acl.Group;
 import java.util.Calendar;
 
 import ko.kufr.m77m77.chatandroidclient.R;
-import ko.kufr.m77m77.chatandroidclient.RequestCallback;
-import ko.kufr.m77m77.chatandroidclient.RequestManager;
-import ko.kufr.m77m77.chatandroidclient.models.Request;
-import ko.kufr.m77m77.chatandroidclient.models.Response;
-import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
+import ko.kufr.m77m77.chatandroidclient.RequestDataCallback;
 import ko.kufr.m77m77.chatandroidclient.models.group.GroupInfo;
 
 /**
@@ -48,6 +38,10 @@ public class GroupsFragment extends Fragment{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private  int newMessages;
+    private  GroupFragment[] groups;
+    private  GroupFragment[] newGroups;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,7 +76,7 @@ public class GroupsFragment extends Fragment{
         }
 
         //this.debugCrtGroup();
-        this.loadGroups();
+        //this.loadGroups();
     }
 
     @Override
@@ -95,7 +89,30 @@ public class GroupsFragment extends Fragment{
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        //this.loadGroups();
+        SwipeRefreshLayout refreshView = view.findViewById(R.id.groups_swipe_container);
+        refreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refresh();
+            }
+        });
+
+        ((SearchView) view.findViewById(R.id.groups_search)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                onSearch();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                onSearch();
+                return false;
+            }
+        });
+
+        refreshView.setRefreshing(true);
+        this.refresh();
     }
 
     private void debugCrtGroup() {
@@ -119,77 +136,90 @@ public class GroupsFragment extends Fragment{
         ft.commit();
     }
 
+    private void onSearch() {
+        String query = ((SearchView)this.getView().findViewById(R.id.groups_search)).getQuery().toString();
+
+        if(query == null)
+            return;
+
+        FragmentTransaction ft = this.getActivity().getSupportFragmentManager().beginTransaction();
+
+        for (GroupFragment frag : this.groups) {
+            if(frag.getName() == null)
+                continue;
+
+            if(frag.getName().toLowerCase().contains(query.toLowerCase())) {
+                ft.show(frag);
+            }else {
+                ft.hide(frag);
+            }
+        }
+
+        ft.commit();
+    }
+
+    public void refresh() {
+        this.newMessages = 0;
+
+        this.loadGroups();
+    }
+
+    private void refreshDone() {
+        FragmentTransaction ftRem = this.getActivity().getSupportFragmentManager().beginTransaction();
+
+        if(this.groups != null)
+        for (GroupFragment frag:this.groups) {
+            ftRem.remove(frag);
+        }
+
+        ftRem.commit();
+
+        this.groups = this.newGroups;
+
+        FragmentTransaction ft = this.getActivity().getSupportFragmentManager().beginTransaction();
+
+        for (GroupFragment frag : this.groups) {
+            ft.add(R.id.groups, frag);
+        }
+
+        ft.commit();
+
+        ((SearchView)this.getView().findViewById(R.id.groups_search)).setQuery("",false);
+        ((SwipeRefreshLayout) getView().findViewById(R.id.groups_swipe_container)).setRefreshing(false);
+
+        if(mListener != null) {
+            mListener.setNewMessages(this.newMessages);
+        }
+    }
+
     private void loadGroups() {
-        Log.d("AAA","AAA");
-        new RequestManager().execute(new Request("api/group/find?name=", "GET",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), null, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
-                    try {
-                        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
 
-                        int newMessages = 0;
+        this.mListener.sendRequest("api/group/getall","GET",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
 
-                        JSONArray array = new JSONArray(response.data.toString());
-                        for(int i = 0; i < array.length(); i++) {
-                            JSONObject obj = array.getJSONObject(i);
-                            GroupInfo info = new GroupInfo(obj);
+                    newGroups = new GroupFragment[array.length()];
 
-                            GroupFragment newFragment = GroupFragment.newInstance(info);
+                    for(int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        GroupInfo info = new GroupInfo(obj);
 
-                            ft.add(R.id.groups, newFragment);
-                        }
+                        newMessages+= info.newMessages;
 
-                        ft.commit();
+                        GroupFragment newFragment = GroupFragment.newInstance(info);
+
+                        newGroups[i] = newFragment;
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        Log.d("Res:",response.toString());
-                        Log.d("Ex",e.toString());
-                        //debugCrtGroup();
-                    }
-                }else {
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
+
+                    refreshDone();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }));
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -229,5 +259,7 @@ public class GroupsFragment extends Fragment{
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void setNewMessages(int num);
+        void sendRequest(String url, String method, String data, final RequestDataCallback callback);
     }
 }

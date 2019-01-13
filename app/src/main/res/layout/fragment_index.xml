@@ -63,9 +63,9 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="99"
             android:textColor="@color/lightTxt"
             android:textSize="12sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/index_chats_icon"
             app:layout_constraintTop_toTopOf="@+id/index_chats_icon" />
 
@@ -103,9 +103,9 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="99"
             android:textColor="@color/lightTxt"
             android:textSize="12sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/index_people_icon"
             app:layout_constraintTop_toTopOf="@+id/index_people_icon" />
     </android.support.constraint.ConstraintLayout>

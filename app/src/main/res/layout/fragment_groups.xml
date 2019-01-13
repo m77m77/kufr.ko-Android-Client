@@ -37,6 +37,15 @@
 
     </SearchView>
 
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/groups_swipe_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/groups_divider">
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -57,4 +66,5 @@
         </LinearLayout>
     </ScrollView>
 
+    </android.support.v4.widget.SwipeRefreshLayout>
 </android.support.constraint.ConstraintLayout>

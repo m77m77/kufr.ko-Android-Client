@@ -21,9 +21,9 @@ import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 
 public class RequestManager extends AsyncTask<Request, Void, Response> {
 
-    private static final String restApiUrl = "http://10.0.2.2:49608/";
+    private static final String restApiUrl = "http://kufrko-rest-api.azurewebsites.net/";
 
-    private static RequestCallback callback;
+    private RequestCallback callback;
 
     private JSONObject sendRequest(Request req) throws IOException,JSONException {
         URL url = new URL(restApiUrl + req.url);
@@ -67,7 +67,7 @@ public class RequestManager extends AsyncTask<Request, Void, Response> {
     protected Response doInBackground(Request... args){
 
         try {
-            RequestManager.callback = args[0].finishMethod;
+            this.callback = args[0].finishMethod;
             JSONObject res = this.sendRequest(args[0]);
 
             return new Response(StatusCode.values()[res.getInt("StatusCode")],res.get("Data"));
@@ -83,6 +83,6 @@ public class RequestManager extends AsyncTask<Request, Void, Response> {
 
     @Override
     protected void onPostExecute(Response result) {
-        RequestManager.callback.call(result);
+        this.callback.call(result);
     }
 }

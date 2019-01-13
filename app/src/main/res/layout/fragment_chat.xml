@@ -17,7 +17,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/chat_swipe_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/chat_bottomBar"
@@ -25,14 +26,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chat_include">
 
-        <LinearLayout
-            android:id="@+id/chat_messages"
+        <ScrollView
+            android:id="@+id/chat_messages_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbarStyle="insideOverlay"
+            app:layout_constraintBottom_toTopOf="@+id/chat_bottomBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chat_include">
 
-        </LinearLayout>
-    </ScrollView>
+            <LinearLayout
+                android:id="@+id/chat_messages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </ScrollView>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/chat_bottomBar"

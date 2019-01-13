@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import ko.kufr.m77m77.chatandroidclient.R;
 
@@ -142,6 +143,34 @@ public class IndexFragment extends Fragment {
                 }
             }
         });
+    }
+
+
+    public void refresh() {
+        this.groups.refresh();
+        this.friends.refresh();
+    }
+
+    public void setNewMessages(int num) {
+        TextView view = this.getView().findViewById(R.id.index_chats_newMessages);
+
+        if(num <= 0) {
+            view.setVisibility(View.GONE);
+        }else {
+            view.setText(num + "");
+            view.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void setNewRequests(int num) {
+        TextView view = this.getView().findViewById(R.id.index_people_newRequests);
+
+        if(num <= 0) {
+            view.setVisibility(View.GONE);
+        }else {
+            view.setText(num + "");
+            view.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
