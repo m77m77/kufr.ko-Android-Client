@@ -68,7 +68,7 @@ public class Message implements Serializable {
     }
 
     public View getView(Context context,ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.fragment_message_normal,parent,false);
+        View view = LayoutInflater.from(context).inflate(this.userIsSender ? R.layout.fragment_message_sender : R.layout.fragment_message_normal,parent,false);
 
         ((TextView) view.findViewById(R.id.message_sender)).setText(this.sender_nickname == null || this.sender_nickname == "null" ? this.sender_name : this.sender_nickname);
         ((TextView) view.findViewById(R.id.message_text)).setText(this.text);
