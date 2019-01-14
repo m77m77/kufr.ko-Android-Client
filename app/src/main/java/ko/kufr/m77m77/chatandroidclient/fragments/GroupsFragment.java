@@ -111,6 +111,13 @@ public class GroupsFragment extends Fragment{
             }
         });
 
+        view.findViewById(R.id.groups_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createNewGroup();
+            }
+        });
+
         refreshView.setRefreshing(true);
         this.refresh();
     }
@@ -222,6 +229,16 @@ public class GroupsFragment extends Fragment{
         });
     }
 
+    private void createNewGroup() {
+        this.mListener.sendRequest("api/group/create","POST",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                mListener.openChatGroup(Long.parseLong(data.toString()));
+                mListener.refreshIndex();
+            }
+        });
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -261,5 +278,7 @@ public class GroupsFragment extends Fragment{
         void onFragmentInteraction(Uri uri);
         void setNewMessages(int num);
         void sendRequest(String url, String method, String data, final RequestDataCallback callback);
+        void openChatGroup(long id);
+        void refreshIndex();
     }
 }

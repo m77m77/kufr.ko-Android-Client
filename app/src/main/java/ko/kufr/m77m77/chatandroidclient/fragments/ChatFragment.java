@@ -36,6 +36,7 @@ import ko.kufr.m77m77.chatandroidclient.RequestManager;
 import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
 import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
+import ko.kufr.m77m77.chatandroidclient.models.group.GroupDetailInfo;
 import ko.kufr.m77m77.chatandroidclient.models.group.GroupInfo;
 import ko.kufr.m77m77.chatandroidclient.models.message.Message;
 
@@ -54,6 +55,7 @@ public class ChatFragment extends Fragment {
 
     private long id_group;
     private LinkedList<Message> messages;
+    private GroupDetailInfo group_info;
 
     private LinearLayout lay;
     private ScrollView scroll;
@@ -142,65 +144,47 @@ public class ChatFragment extends Fragment {
 
         //this.debugCrtMessage();
         swipe.setRefreshing(true);
+        this.loadInfo();
         this.loadOld();
+    }
+
+    private void loadInfo() {
+        this.mListener.sendRequest("api/group/getdetail?id=" + this.id_group,"GET",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONObject obj = new JSONObject(data.toString());
+
+                    group_info = new GroupDetailInfo(obj);
+
+                    loadInfoDone();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void loadInfoDone() {
+        ((TextView) this.getView().findViewById(R.id.chat_include).findViewById(R.id.appbar_name)).setText(this.group_info.displayName);
     }
 
     private void sendMessage() {
         String text = this.messageField.getText().toString();
 
-        if(text != null && text != "")
-        new RequestManager().execute(new Request("api/message/sendmessage", "POST",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), "Id_Group=" + this.id_group + "&Id_Attachment=[]" + "&Text=" + text, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
+        if(!text.isEmpty()) {
+            this.mListener.sendRequest("api/message/sendmessage" ,"POST","Id_Group=" + this.id_group + "&Id_Attachment=[]" + "&Text=" + text, new RequestDataCallback() {
+                @Override
+                public void call(Object data) {
                     messageField.setText("");
                     loadNew();
-                    if(mListener != null) {
+                    if (mListener != null) {
                         mListener.refreshIndex();
                     }
-                }else {
-                    //Log.d("Debug","groups response code not ok: "  + response.statusCode.toString());
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
                 }
-            }
-        }));
+            });
+        }
     }
 
     public void loadOld() {
@@ -232,123 +216,33 @@ public class ChatFragment extends Fragment {
     }
 
     private void loadMessages(long lastId,int amount) {
-        new RequestManager().execute(new Request("api/message/getmessages", "POST",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), "Id_Group=" + this.id_group + "&StartId=" + lastId + "&Amount=" + amount, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
-                    try {
-                        JSONArray array = new JSONArray(response.data.toString());
-                        addOldMessages(readToArray(array));
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        Log.d("Res:",response.toString());
-                        Log.d("Ex",e.toString());
-                        //debugCrtGroup();
-                    }
-                }else {
-                    //Log.d("Debug","groups response code not ok: "  + response.statusCode.toString());
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
+        this.mListener.sendRequest("api/message/getmessages" ,"POST","Id_Group=" + this.id_group + "&StartId=" + lastId + "&Amount=" + amount, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
+                    addOldMessages(readToArray(array));
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }));
+        });
     }
 
     private void loadNewMessages(long lastId) {
-        new RequestManager().execute(new Request("api/message/getnewmessages", "POST",this.getActivity().getSharedPreferences("global",Context.MODE_PRIVATE).getString("Token","None"), "Groups=" + this.id_group + "&Id_Last=" + lastId, new RequestCallback() {
-            public void call(Response response) {
-                if(response.statusCode == StatusCode.OK) {
-                    try {
-                        JSONArray array = new JSONArray(response.data.toString());
-                        addNewMessages(readToArray(array));
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        Log.d("Res:",response.toString());
-                        Log.d("Ex",e.toString());
-                        //debugCrtGroup();
-                    }
-                }else {
-                    //Log.d("Debug","groups response code not ok: "  + response.statusCode.toString());
-                    //debugCrtGroup();
-                    /*switch (response.statusCode) {
-                        case INVALID_REQUEST:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(getString(R.string.error_invalid_request));
-                            break;
-                        case DATABASE_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_database_error);
-                            break;
-                        case INVALID_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_invalid_email);
-                            break;
-                        case INVALID_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_invalid_password);
-                            break;
-                        case EMAIL_ALREADY_EXISTS:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_email_already_exists);
-                            break;
-                        case EMPTY_EMAIL:
-                            errorEmail.setVisibility(View.VISIBLE);
-                            errorEmail.setText(R.string.error_empty_email);
-                            break;
-                        case EMPTY_PASSWORD:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_empty_password);
-                            break;
-                        case EMPTY_NAME:
-                            errorName.setVisibility(View.VISIBLE);
-                            errorName.setText(R.string.error_empty_name);
-                            break;
-                        case NETWORK_ERROR:
-                            errorPassword.setVisibility(View.VISIBLE);
-                            errorPassword.setText(R.string.error_network);
-                            break;
-                    }*/
+        this.mListener.sendRequest("api/message/getnewmessages" ,"POST","Groups=" + this.id_group + "&Id_Last=" + lastId, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
+                    addNewMessages(readToArray(array));
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
-        }));
+        });
     }
 
     private void addOldMessages(Message[] msgs) {
@@ -364,6 +258,8 @@ public class ChatFragment extends Fragment {
                     msg.setLast(false);
                     if((this.messages.getLast().sent.getTime() - msg.sent.getTime()) / 1000l / 60l < 5l) {
                         msg.setDate(false);
+                    }else {
+                        msg.setDate(true);
                     }
                 }else {
                     msg.setLast(true);
@@ -405,6 +301,8 @@ public class ChatFragment extends Fragment {
                     msg.setFirst(false);
                     if((msg.sent.getTime() - this.messages.getFirst().sent.getTime()) / 1000l / 60l < 5l) {
                         this.messages.getFirst().setDate(false);
+                    }else {
+                        this.messages.getFirst().setDate(true);
                     }
                 }else {
                     msg.setFirst(true);

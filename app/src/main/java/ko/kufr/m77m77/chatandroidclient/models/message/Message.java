@@ -124,6 +124,7 @@ public class Message implements Serializable {
 
         if(visible) {
             this.view.findViewById(R.id.message_date).setVisibility(View.VISIBLE);
+            //this.view.findViewById(R.id.message_user_image).setVisibility(View.VISIBLE);
         }else {
             this.view.findViewById(R.id.message_date).setVisibility(View.GONE);
         }

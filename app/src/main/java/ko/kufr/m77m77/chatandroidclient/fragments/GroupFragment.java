@@ -86,7 +86,7 @@ public class GroupFragment extends Fragment {
             groupName.setText(this.info.name);
 
             TextView groupLastMessage = (TextView) view.findViewById(R.id.group_lastMessage);
-            groupLastMessage.setText((this.info.lastMessageSender != null ? this.info.lastMessageSender + ": " : "") + (this.info.lastMessageText != null ? this.info.lastMessageText : ""));
+            groupLastMessage.setText((this.info.lastMessageSender != "null" ? this.info.lastMessageSender + ": " : "") + (this.info.lastMessageText != "null" ? this.info.lastMessageText : ""));
 
             String date = "";
 
