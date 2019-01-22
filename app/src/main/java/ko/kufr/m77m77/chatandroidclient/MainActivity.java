@@ -2,6 +2,7 @@ package ko.kufr.m77m77.chatandroidclient;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -26,16 +27,19 @@ import ko.kufr.m77m77.chatandroidclient.fragments.GroupFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.GroupsFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.IndexFragment;
 import ko.kufr.m77m77.chatandroidclient.fragments.MessageFragment;
+import ko.kufr.m77m77.chatandroidclient.fragments.ProfileFragment;
 import ko.kufr.m77m77.chatandroidclient.models.Request;
 import ko.kufr.m77m77.chatandroidclient.models.Response;
 import ko.kufr.m77m77.chatandroidclient.models.enums.StatusCode;
 import ko.kufr.m77m77.chatandroidclient.models.user.UserPublic;
 
-public class MainActivity extends AppCompatActivity implements GroupFragment.OnFragmentInteractionListener,GroupsFragment.OnFragmentInteractionListener,IndexFragment.OnFragmentInteractionListener,FriendsFragment.OnFragmentInteractionListener,FriendFragment.OnFragmentInteractionListener,ChatFragment.OnFragmentInteractionListener,MessageFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements GroupFragment.OnFragmentInteractionListener,GroupsFragment.OnFragmentInteractionListener,IndexFragment.OnFragmentInteractionListener,FriendsFragment.OnFragmentInteractionListener,FriendFragment.OnFragmentInteractionListener,ChatFragment.OnFragmentInteractionListener,MessageFragment.OnFragmentInteractionListener,ProfileFragment.OnFragmentInteractionListener {
 
     private IndexFragment indexFragment;
 
     private ChatFragment chatFragment;
+
+    private ProfileFragment profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +52,12 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
         }
 
         this.indexFragment = new IndexFragment();
+        this.profileFragment = new ProfileFragment();
 
         FragmentTransaction transaction = this.getSupportFragmentManager().beginTransaction();
         transaction.add(R.id.mainFragmentContainer,this.indexFragment);
+        transaction.add(R.id.mainFragmentContainer,this.profileFragment);
+        transaction.hide(this.profileFragment);
         //ChatFragment chatFrag = new ChatFragment();
         //transaction.add(R.id.mainFragmentContainer,chatFrag);
         transaction.commit();
@@ -63,6 +70,31 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.OnF
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void backFromProfile() {
+        FragmentTransaction trn = this.getSupportFragmentManager().beginTransaction();
+        trn.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+        trn.show(this.indexFragment);
+        trn.hide(this.profileFragment);
+        trn.commit();
+    }
+
+    @Override
+    public void logout() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        this.startActivity(intent);
+    }
+
+    @Override
+    public void openProfile() {
+        FragmentTransaction trn = this.getSupportFragmentManager().beginTransaction();
+        trn.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+        trn.hide(this.indexFragment);
+        trn.show(this.profileFragment);
+        trn.addToBackStack(null);
+        trn.commit();
     }
 
     @Override

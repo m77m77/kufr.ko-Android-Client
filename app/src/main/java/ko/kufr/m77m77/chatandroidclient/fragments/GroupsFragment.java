@@ -152,10 +152,10 @@ public class GroupsFragment extends Fragment{
         FragmentTransaction ft = this.getActivity().getSupportFragmentManager().beginTransaction();
 
         for (GroupFragment frag : this.groups) {
-            if(frag.getName() == null)
+            if(frag.getGroupName() == null)
                 continue;
 
-            if(frag.getName().toLowerCase().contains(query.toLowerCase())) {
+            if(frag.getGroupName().toLowerCase().contains(query.toLowerCase())) {
                 ft.show(frag);
             }else {
                 ft.hide(frag);

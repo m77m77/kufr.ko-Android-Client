@@ -6,11 +6,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import ko.kufr.m77m77.chatandroidclient.R;
+import ko.kufr.m77m77.chatandroidclient.RequestDataCallback;
 import ko.kufr.m77m77.chatandroidclient.models.user.UserPublic;
 
 /**
@@ -25,7 +30,8 @@ public class FriendFragment extends Fragment {
     public enum Type {
         REQUEST,
         NORMAL,
-        BLOCK
+        BLOCK,
+        NEW
     }
 
     private static final String ARG_USER = "paramUser";
@@ -82,13 +88,124 @@ public class FriendFragment extends Fragment {
 
             if(this.type == Type.REQUEST) {
                 view.findViewById(R.id.friend_more).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_add).setVisibility(View.GONE);
                 view.findViewById(R.id.friend_container).setClickable(false);
+                view.findViewById(R.id.friend_accept).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        acceptFriend();
+                    }
+                });
+                view.findViewById(R.id.friend_deny).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        removeFriend();
+                    }
+                });
+                view.findViewById(R.id.friend_block).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        blockFriend();
+                    }
+                });
             }else if(this.type == Type.NORMAL) {
+                view.findViewById(R.id.friend_add).setVisibility(View.GONE);
                 view.findViewById(R.id.friend_accept).setVisibility(View.GONE);
                 view.findViewById(R.id.friend_deny).setVisibility(View.GONE);
                 view.findViewById(R.id.friend_block).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_container).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mListener.openChatGroup(userInfo.id_group);
+                    }
+                });
+                view.findViewById(R.id.friend_more).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showPopupMenu(v);
+                    }
+                });
+            }else if(this.type == Type.NEW) {
+                view.findViewById(R.id.friend_more).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_accept).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_deny).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_block).setVisibility(View.GONE);
+                view.findViewById(R.id.friend_add).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        addFriend();
+                    }
+                });
             }
         }
+    }
+
+    public String getUserName() {
+        return this.userInfo.name;
+    }
+
+    private void showPopupMenu(View view) {
+        PopupMenu menu = new PopupMenu(this.getContext(),view);
+        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                return handleMenuClicks(item);
+            }
+        });
+        MenuInflater inflater = menu.getMenuInflater();
+        inflater.inflate(R.menu.menu_existing_friend,menu.getMenu());
+        menu.show();
+
+    }
+
+    private boolean handleMenuClicks(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_ex_fr_delete:
+                removeFriend();
+                return true;
+            case R.id.menu_ex_fr_block:
+                blockFriend();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private void acceptFriend() {
+        //mListener.sendRequest("api/friend/");
+        this.mListener.sendRequest("api/friend/acceptfriend","PATCH","User_id=" + this.userInfo.id, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                mListener.refreshIndex();
+            }
+        });
+    }
+
+    private void removeFriend() {
+        this.mListener.sendRequest("api/friend/removefriend","DELETE","User_id=" + this.userInfo.id, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                mListener.refreshIndex();
+            }
+        });
+    }
+
+    private void blockFriend() {
+        this.mListener.sendRequest("api/friend/blockfriend","PATCH","User_id=" + this.userInfo.id, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                mListener.refreshIndex();
+            }
+        });
+    }
+
+    private void addFriend() {
+        this.mListener.sendRequest("api/friend/createfriendrequest","POST","User_id=" + this.userInfo.id, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                mListener.refreshIndex();
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -128,5 +245,8 @@ public class FriendFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void openChatGroup(long id);
+        void refreshIndex();
+        void sendRequest(String url, String method, String data, final RequestDataCallback callback);
     }
 }

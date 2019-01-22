@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -143,12 +144,21 @@ public class IndexFragment extends Fragment {
                 }
             }
         });
+
+        view.findViewById(R.id.index_include).findViewById(R.id.appbar_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.openProfile();
+            }
+        });
     }
 
 
     public void refresh() {
         this.groups.refresh();
+        ((SwipeRefreshLayout)this.friends.getView().findViewById(R.id.friends_swipe_container)).setRefreshing(true);
         this.friends.refresh();
+
     }
 
     public void setNewMessages(int num) {
@@ -203,5 +213,6 @@ public class IndexFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+        void openProfile();
     }
 }

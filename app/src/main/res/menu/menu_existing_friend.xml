@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_ex_fr_delete"
+        android:title="@string/friends_menu_delete" />
+    <item
+        android:id="@+id/menu_ex_fr_block"
+        android:title="@string/friends_menu_block" />
+</menu>

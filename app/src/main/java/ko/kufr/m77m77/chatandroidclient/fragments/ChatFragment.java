@@ -174,7 +174,7 @@ public class ChatFragment extends Fragment {
         String text = this.messageField.getText().toString();
 
         if(!text.isEmpty()) {
-            this.mListener.sendRequest("api/message/sendmessage" ,"POST","Id_Group=" + this.id_group + "&Id_Attachment=[]" + "&Text=" + text, new RequestDataCallback() {
+            this.mListener.sendRequest("api/message/sendmessage" ,"POST","Id_Group=" + this.id_group /*+ "&Id_Attachment[0]=1"*/ + "&Text=" + text, new RequestDataCallback() {
                 @Override
                 public void call(Object data) {
                     messageField.setText("");

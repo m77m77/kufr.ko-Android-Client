@@ -18,12 +18,13 @@ import java.util.Date;
 import java.util.List;
 
 import ko.kufr.m77m77.chatandroidclient.R;
+import ko.kufr.m77m77.chatandroidclient.models.attachments.AttachmentMessage;
 
 public class Message implements Serializable {
     public long id;
     public boolean edited;
     public String text;
-    public long[] id_attachments;
+    public AttachmentMessage[] attachments;
     public long id_group;
 
     public long sender_id;
@@ -46,9 +47,9 @@ public class Message implements Serializable {
         this.edited = json.getBoolean("Edited");
         this.text = json.getString("Text");
         JSONArray attachments = json.getJSONArray("Id_Attachment");
-        this.id_attachments = new long[attachments.length()];
+        this.attachments = new AttachmentMessage[attachments.length()];
         for (int i = 0; i < attachments.length(); i++) {
-            this.id_attachments[i] = attachments.getLong(i);
+            this.attachments[i] = new AttachmentMessage(attachments.getJSONObject(i));
         }
         this.id_group = json.getLong("Id_Group");
         JSONObject uInfo = json.getJSONObject("UserInfo");
@@ -77,16 +78,18 @@ public class Message implements Serializable {
         Calendar lmDate = Calendar.getInstance();
         lmDate.setTime(this.sent);
 
-        SimpleDateFormat format;
+         String pattern = "";
 
         if(now.get(Calendar.YEAR) != lmDate.get(Calendar.YEAR)) {
-            format = new SimpleDateFormat("dd.MM.yyyy");
+            pattern = "dd.MM.yyyy  ";
 
         }else if(now.get(Calendar.DAY_OF_YEAR) != lmDate.get(Calendar.DAY_OF_YEAR)) {
-            format = new SimpleDateFormat("dd.MM.");
-        }else {
-            format = new SimpleDateFormat("HH:mm");
+            pattern = "dd.MM.  ";
         }
+            pattern += "HH:mm";
+
+
+        SimpleDateFormat format =  new SimpleDateFormat(pattern);
 
         ((TextView) view.findViewById(R.id.message_date)).setText(format.format(lmDate.getTime()));
 

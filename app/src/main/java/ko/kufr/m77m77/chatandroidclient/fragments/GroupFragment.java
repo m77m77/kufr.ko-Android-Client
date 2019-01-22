@@ -57,7 +57,7 @@ public class GroupFragment extends Fragment {
         return fragment;
     }
 
-    public String getName() {
+    public String getGroupName() {
         if(this.info != null)
             return  this.info.name;
 

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import ko.kufr.m77m77.chatandroidclient.R;
 import ko.kufr.m77m77.chatandroidclient.RequestCallback;
@@ -51,16 +53,22 @@ public class FriendsFragment extends Fragment {
 
     private FriendFragment[] pending;
     private FriendFragment[] existing;
+    private FriendFragment[] search;
 
     private FriendFragment[] newPending;
     private FriendFragment[] newExisting;
+    private FriendFragment[] newSearch;
 
     private boolean pendingDone;
     private boolean existingDone;
+    private boolean searchDone;
+
+    private boolean isRefreshing = false;
 
 
     private SectionDividerFragment pendingDivider;
     private SectionDividerFragment existingDivider;
+    private SectionDividerFragment searchDivider;
 
     private OnFragmentInteractionListener mListener;
 
@@ -97,6 +105,7 @@ public class FriendsFragment extends Fragment {
 
         this.pendingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title));
         this.existingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title));
+        this.searchDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_new_title));
     }
 
     @Override
@@ -110,6 +119,20 @@ public class FriendsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         //this.loadPendingFriends();
         //this.loadExistingFriends();
+
+        ((SearchView) view.findViewById(R.id.friends_search)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                refresh();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                refresh();
+                return false;
+            }
+        });
 
         SwipeRefreshLayout refreshView = (SwipeRefreshLayout) view.findViewById(R.id.friends_swipe_container);
         refreshView.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -142,22 +165,35 @@ public class FriendsFragment extends Fragment {
     }
 
     public void refresh() {
+        if(this.isRefreshing)
+            return;
+
+        this.isRefreshing = true;
 
         this.pendingDone = false;
         this.existingDone = false;
+        this.searchDone = false;
 
         this.loadPendingFriends();
         this.loadExistingFriends();
+        //this.loadNewFriends();
+        if(!((SearchView)this.getView().findViewById(R.id.friends_search)).getQuery().toString().isEmpty()) {
+            this.loadNewFriends();
+        }else {
+            this.searchDone = true;
+        }
+
     }
 
     private void refreshDone() {
-        if(!(this.pendingDone && this.existingDone))
+        if(!(this.pendingDone && this.existingDone && this.searchDone))
             return;
 
         FragmentTransaction ftRem = getActivity().getSupportFragmentManager().beginTransaction();
 
         ftRem.remove(this.pendingDivider);
         ftRem.remove(this.existingDivider);
+        ftRem.remove(this.searchDivider);
 
         if(this.pending != null)
         for (FriendFragment frag: this.pending) {
@@ -169,14 +205,24 @@ public class FriendsFragment extends Fragment {
             ftRem.remove(frag);
         }
 
+        if(this.search != null)
+            for (FriendFragment frag: this.search) {
+                ftRem.remove(frag);
+            }
+
         ftRem.commit();
 
 
         this.pending = this.newPending;
         this.existing = this.newExisting;
+        this.search = this.newSearch;
 
         this.pendingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_requests_title));
         this.existingDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_normal_title));
+        this.searchDivider = SectionDividerFragment.newInstance(this.getContext().getString(R.string.friends_new_title));
+
+        String query = ((SearchView)this.getView().findViewById(R.id.friends_search)).getQuery().toString();
+        boolean searching = !query.isEmpty();
 
 
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
@@ -188,11 +234,19 @@ public class FriendsFragment extends Fragment {
             ft.add(R.id.friends,frag);
         }
 
-
+        if(this.existing.length > 0)
         ft.add(R.id.friends,this.existingDivider);
 
         for (FriendFragment frag: this.existing) {
             ft.add(R.id.friends,frag);
+        }
+
+        if(searching) {
+            ft.add(R.id.friends, this.searchDivider);
+
+            for (FriendFragment frag : this.search) {
+                ft.add(R.id.friends, frag);
+            }
         }
 
         ft.commit();
@@ -202,6 +256,8 @@ public class FriendsFragment extends Fragment {
         if(mListener != null) {
             mListener.setNewRequests(this.pending.length);
         }
+
+        this.isRefreshing = false;
     }
 
     private void loadExistingFriends() {
@@ -211,16 +267,24 @@ public class FriendsFragment extends Fragment {
                 try {
                     JSONArray array = new JSONArray(data.toString());
 
-                    newExisting = new FriendFragment[array.length()];
+                    newExisting = new FriendFragment[0];
+
+                    ArrayList<FriendFragment> list = new ArrayList<>();
+                    String query = ((SearchView)getView().findViewById(R.id.friends_search)).getQuery().toString();
 
                     for(int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
                         UserPublic user = new UserPublic(obj);
 
-                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.NORMAL);
+                        if(!query.isEmpty() && !user.name.toLowerCase().contains(query.toLowerCase())) {
+                            continue;
+                        }
 
-                        newExisting[i] = newFragment;
+                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.NORMAL);
+                        list.add(newFragment);
                     }
+
+                    newExisting = list.toArray(newExisting);
 
                     existingDone = true;
 
@@ -234,24 +298,61 @@ public class FriendsFragment extends Fragment {
     }
 
     private void loadPendingFriends() {
-        this.mListener.sendRequest("api/friend/loadpending","GET",null, new RequestDataCallback() {
+        this.mListener.sendRequest("api/friend/loadpendingtome","GET",null, new RequestDataCallback() {
             @Override
             public void call(Object data) {
                 try {
                     JSONArray array = new JSONArray(data.toString());
 
-                    newPending = new FriendFragment[array.length()];
+                    newPending = new FriendFragment[0];
+
+                    ArrayList<FriendFragment> list = new ArrayList<>();
+                    String query = ((SearchView)getView().findViewById(R.id.friends_search)).getQuery().toString();
 
                     for(int i = 0; i < array.length(); i++) {
                         JSONObject obj = array.getJSONObject(i);
                         UserPublic user = new UserPublic(obj);
 
-                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.REQUEST);
+                        if(!query.isEmpty() && !user.name.toLowerCase().contains(query.toLowerCase())) {
+                            continue;
+                        }
 
-                        newPending[i] = newFragment;
+                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.REQUEST);
+                        list.add(newFragment);
                     }
 
+                    newPending = list.toArray(newPending);
+
                     pendingDone = true;
+
+                    refreshDone();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void loadNewFriends() {
+        this.mListener.sendRequest("api/friend/searchnewfriends?fulltext=" + ((SearchView)this.getView().findViewById(R.id.friends_search)).getQuery(),"GET",null, new RequestDataCallback() {
+            @Override
+            public void call(Object data) {
+                try {
+                    JSONArray array = new JSONArray(data.toString());
+
+                    newSearch = new FriendFragment[array.length()];
+
+                    for(int i = 0; i < array.length(); i++) {
+                        JSONObject obj = array.getJSONObject(i);
+                        UserPublic user = new UserPublic(obj);
+
+                        FriendFragment newFragment = FriendFragment.newInstance(user,FriendFragment.Type.NEW);
+
+                        newSearch[i] = newFragment;
+                    }
+
+                    searchDone = true;
 
                     refreshDone();
                 }

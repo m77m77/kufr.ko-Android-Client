@@ -12,8 +12,12 @@
     <string name="group_online">⬤ Online</string>
     <string name="search_hint">Search</string>
     <string name="chat_placeholder_message">Type a message</string>
-    <string name="friends_requests_title">Friend requests</string>)
+    <string name="friends_requests_title">Friend requests</string>
     <string name="friends_normal_title">Friends</string>
+    <string name="friends_new_title">Find friends</string>
+    <string name="friends_menu_delete">Remove</string>
+    <string name="friends_menu_block">Block</string>
+    <string name="appbar_profile">My Profile</string>
     <string name="error_invalid_request">Server error. Please try again later</string>
     <string name="error_database_error">Server error. Please try again later</string>
     <string name="error_invalid_email">Invalid email address</string>
